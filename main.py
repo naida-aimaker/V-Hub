@@ -105,27 +105,29 @@ def main(page: ft.Page):
         return ft.Column([ft.Container(height=10), build_catalog_section(), ft.Container(height=20)])
 
     # --- 🛍️ КАТАЛОГ ---
-    def catalog_view():
+def catalog_view():
         try:
+            # Викликаємо функцію
             businesses = get_businesses_from_sheet()
-            if not businesses:
-                return ft.Container(padding=20, content=ft.Column([
-                    ft.Text("Помилка або таблиця порожня!", size=20, color="red"),
-                    ft.ElevatedButton("Назад", on_click=lambda e: navigate_to("home"))
-                ]))
             
+            # Якщо нічого не прийшло, виводимо текст прямо на сторінку
+            if not businesses:
+                return ft.Container(
+                    padding=20,
+                    content=ft.Column([
+                        ft.Text("Дані не завантажено!", color="red", size=20),
+                        ft.Text("Перевірте: чи є дані в аркуші 'Businesses'?"),
+                        ft.ElevatedButton("Назад", on_click=lambda e: navigate_to("home"))
+                    ])
+                )
+            
+            # Якщо дані є, будуємо картки
             cards = [create_business_card(b.get("Назва", "Бізнес"), b.get("Категорія", "-"), b.get("Опис", "")) for b in businesses]
+            return ft.Container(padding=20, content=ft.Column([ft.Text("Каталог", size=24), *cards]))
+
         except Exception as e:
-            return ft.Container(padding=20, content=ft.Text(f"Критична помилка: {str(e)}"))
-        
-        return ft.Container(
-            padding=20,
-            content=ft.Column([
-                ft.Text("Повний каталог", size=24, weight="bold"),
-                *cards,
-                ft.ElevatedButton("Назад на головну", on_click=lambda e: navigate_to("home"))
-            ])
-        )
+            # Якщо сталася помилка, виведемо її текст прямо на екран
+            return ft.Container(padding=20, content=ft.Text(f"ПОМИЛКА: {str(e)}", color="red"))
 
     def build_catalog_section():
         return ft.Container(content=ft.Text("Натисніть нижче, щоб побачити каталог"), bgcolor="white", padding=20) 
