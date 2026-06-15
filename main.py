@@ -50,22 +50,13 @@ def create_business_card(name, category, description):
 
 # --- 🏠 ОСНОВНИЙ ІНТЕРФЕЙС ---
 def main(page: ft.Page):
-    page.add(ft.Text("Завантаження системи...")) # Це ми побачимо миттєво
+    page.add(ft.Text("Завантаження системи..."))
     
     page.title = "VeteransHUB" 
     page.theme_mode = "light"
     page.bgcolor = "#F8F6F0"
     
-    # ... (весь інший ваш код) ...
-
-    try:
-        main_content = ft.Container(expand=True) 
-        main_content.content = home_view()
-        page.add(main_content)
-        page.update()
-    except Exception as e:
-        page.add(ft.Text(f"ПОМИЛКА ЗАПУСКУ: {str(e)}", color="red"))
-        page.update() 
+    main_content = ft.Container(expand=True)
 
     def navigate_to(view_name):
         page.drawer.open = False
@@ -107,40 +98,36 @@ def main(page: ft.Page):
         center_title=True, bgcolor="#F8F6F0"
     )
 
-    # --- 🏠 ГОЛОВНИЙ ЕКРАН ---
     def home_view():
         return ft.Column([ft.Container(height=10), build_catalog_section(), ft.Container(height=20)])
 
-    # --- 🛍️ КАТАЛОГ ---
-def catalog_view():
+    def catalog_view():
         try:
-            # Викликаємо функцію
             businesses = get_businesses_from_sheet()
-            
-            # Якщо нічого не прийшло, виводимо текст прямо на сторінку
             if not businesses:
-                return ft.Container(
-                    padding=20,
-                    content=ft.Column([
-                        ft.Text("Дані не завантажено!", color="red", size=20),
-                        ft.Text("Перевірте: чи є дані в аркуші 'Businesses'?"),
-                        ft.ElevatedButton("Назад", on_click=lambda e: navigate_to("home"))
-                    ])
-                )
-            
-            # Якщо дані є, будуємо картки
+                return ft.Container(padding=20, content=ft.Column([
+                    ft.Text("Дані не завантажено!", color="red", size=20),
+                    ft.ElevatedButton("Назад", on_click=lambda e: navigate_to("home"))
+                ]))
             cards = [create_business_card(b.get("Назва", "Бізнес"), b.get("Категорія", "-"), b.get("Опис", "")) for b in businesses]
             return ft.Container(padding=20, content=ft.Column([ft.Text("Каталог", size=24), *cards]))
-
         except Exception as e:
-            # Якщо сталася помилка, виведемо її текст прямо на екран
             return ft.Container(padding=20, content=ft.Text(f"ПОМИЛКА: {str(e)}", color="red"))
 
     def build_catalog_section():
         return ft.Container(content=ft.Text("Натисніть нижче, щоб побачити каталог"), bgcolor="white", padding=20) 
 
-    main_content.content = home_view()
-    page.add(main_content)
+    try:
+        main_content.content = home_view()
+        page.add(main_content)
+        page.update()
+    except Exception as e:
+        page.add(ft.Text(f"ПОМИЛКА ЗАПУСКУ: {str(e)}", color="red"))
+        page.update()
+
+# --- ТОЧКА ВХОДУ ДЛЯ VERCEL ---
+def app(request):
+    return "VeteransHUB"
 
 if __name__ == "__main__":
     ft.run(main)
