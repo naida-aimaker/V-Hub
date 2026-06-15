@@ -26,16 +26,12 @@ def get_businesses_from_sheet():
     if not gc:
         return []
     try:
-        # Підключення до вашої таблиці
         sh = gc.open("V-Hub_Database")
-        
-        # КРОК 3: Вказуємо назву конкретного листа (вкладки)
-        # ЗАМІНІТЬ "Sheet1" на назву вкладки, яка у вас внизу Google Таблиці
+        # Тепер ми точно звертаємося до аркуша "Businesses"
         worksheet = sh.worksheet("Businesses") 
-        
         return worksheet.get_all_records()
     except Exception as e:
-        print(f"Помилка завантаження даних з листа: {e}")
+        print(f"Помилка завантаження даних: {e}")
         return []
 
 def create_business_card(name, category, description):
