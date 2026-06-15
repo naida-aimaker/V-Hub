@@ -1,0 +1,9 @@
+{
+  "builds": [
+    {
+      "src": "main.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "installCommand": "pip install --upgrade pip && pip install flet flet-cli gspread oauth2client python-dotenv"
+}
