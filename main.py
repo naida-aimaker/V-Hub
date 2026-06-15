@@ -50,15 +50,22 @@ def create_business_card(name, category, description):
 
 # --- 🏠 ОСНОВНИЙ ІНТЕРФЕЙС ---
 def main(page: ft.Page):
+    page.add(ft.Text("Завантаження системи...")) # Це ми побачимо миттєво
+    
     page.title = "VeteransHUB" 
-    page.window.width = 390
-    page.window.height = 844
     page.theme_mode = "light"
-    page.bgcolor = "#F8F6F0" 
-    page.padding = 0
-    page.scroll = "auto" 
+    page.bgcolor = "#F8F6F0"
+    
+    # ... (весь інший ваш код) ...
 
-    main_content = ft.Container(expand=True) 
+    try:
+        main_content = ft.Container(expand=True) 
+        main_content.content = home_view()
+        page.add(main_content)
+        page.update()
+    except Exception as e:
+        page.add(ft.Text(f"ПОМИЛКА ЗАПУСКУ: {str(e)}", color="red"))
+        page.update() 
 
     def navigate_to(view_name):
         page.drawer.open = False
