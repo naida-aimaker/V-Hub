@@ -28,11 +28,14 @@ def get_businesses_from_sheet():
     try:
         # Підключення до вашої таблиці
         sh = gc.open("V-Hub_Database")
-        worksheet = sh.sheet1
-        # Повертає дані як список словників [{"Назва": "...", "Категорія": "...", "Опис": "..."}]
+        
+        # КРОК 3: Вказуємо назву конкретного листа (вкладки)
+        # ЗАМІНІТЬ "Sheet1" на назву вкладки, яка у вас внизу Google Таблиці
+        worksheet = sh.worksheet("Businesses") 
+        
         return worksheet.get_all_records()
     except Exception as e:
-        print(f"Помилка завантаження даних: {e}")
+        print(f"Помилка завантаження даних з листа: {e}")
         return []
 
 def create_business_card(name, category, description):
@@ -105,12 +108,17 @@ def main(page: ft.Page):
 
     # --- 🛍️ КАТАЛОГ ---
     def catalog_view():
-        businesses = get_businesses_from_sheet()
-        # Якщо в таблиці порожньо, виведемо повідомлення
-        if not businesses:
-            cards = [ft.Text("Дані не знайдені або помилка підключення.")]
-        else:
+        try:
+            businesses = get_businesses_from_sheet()
+            if not businesses:
+                return ft.Container(padding=20, content=ft.Column([
+                    ft.Text("Помилка або таблиця порожня!", size=20, color="red"),
+                    ft.ElevatedButton("Назад", on_click=lambda e: navigate_to("home"))
+                ]))
+            
             cards = [create_business_card(b.get("Назва", "Бізнес"), b.get("Категорія", "-"), b.get("Опис", "")) for b in businesses]
+        except Exception as e:
+            return ft.Container(padding=20, content=ft.Text(f"Критична помилка: {str(e)}"))
         
         return ft.Container(
             padding=20,
