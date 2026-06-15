@@ -24,14 +24,16 @@ gc = get_google_sheets()
 # --- 📊 РОБОТА З ДАНИМИ ---
 def get_businesses_from_sheet():
     if not gc:
+        print("Помилка: gc не ініціалізовано!")
         return []
     try:
         sh = gc.open("V-Hub_Database")
-        # Тепер ми точно звертаємося до аркуша "Businesses"
-        worksheet = sh.worksheet("Businesses") 
-        return worksheet.get_all_records()
+        worksheet = sh.worksheet("Businesses")
+        data = worksheet.get_all_records()
+        print(f"Успішно отримано {len(data)} записів.")
+        return data
     except Exception as e:
-        print(f"Помилка завантаження даних: {e}")
+        print(f"КРИТИЧНА ПОМИЛКА: {str(e)}")
         return []
 
 def create_business_card(name, category, description):
